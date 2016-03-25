@@ -1,0 +1,7 @@
+#accounts-connected, #accounts-not-connected, #stats {
+	display: none;
+}
+
+.container {
+	padding-top: 10px;
+}
