@@ -52,7 +52,10 @@ function disconnect() {
 //******************************************************************************
 
 // Completed tasks, loaded from Wunderlist.
-var wunderlistTasks = [];
+// Just IDs.
+var wunderlistTaskIDs = [];
+// Objects themselves.
+var wunderlistTaskObjects = {};
 
 // Current sync step.
 var syncStep = 0;
@@ -63,7 +66,8 @@ var syncStep = 0;
 
 function sync() {
 	// Initializing sync variables.
-	wunderlistTasks = [];
+	wunderlistTaskIDs = [];
+	wunderlistTaskObjects = {};
 
 	// Initializing SDK.
 	wunderlistSDK = new wlSDK({
@@ -77,8 +81,8 @@ function sync() {
 
 //******************************************************************************
 // sync1
-// Loads completed tasks from Wunderlist and stores them in wunderlistTasks
-// variable.
+// Loads completed tasks from Wunderlist and stores them in wunderlistTaskIDs
+// and wunderlistTaskObjects variables.
 //******************************************************************************
 
 // Number of lists, not processed yet by asynchronous fetch function.
@@ -92,7 +96,8 @@ function sync1() {
 	console.log("Sync: step #1 started.");
 
 	// Initialization.
-	wunderlistTasks = [];
+	wunderlistTaskIDs = [];
+	wunderlistTaskObjects = {};
 	listLeft = 100; // Just huge number.
 
 	// Creating handlers for lists and tasks.
@@ -106,7 +111,9 @@ function sync1() {
 				.done(function (tasks) {
 					// Iterating over all tasks.
 					for (j in tasks) {
-						wunderlistTasks.push(tasks[j].id);
+						// Saving ID and object.
+						wunderlistTaskIDs.push(tasks[j].id);
+						wunderlistTaskObjects[tasks[j].id] = tasks[j];
 					}
 					// One list finished!
 					listsLeft -= 1;
@@ -122,7 +129,7 @@ function sync1check() {
 	// Checking.
 	if (listsLeft == 0) {
 		// Debug.
-		console.log("Fetched " + wunderlistTasks.length + " completed tasks.");
+		console.log("Fetched " + wunderlistTaskIDs.length + " completed tasks.");
 		console.log("Sync: step #1 finished.");
 		// Triggering next step.
 		sync2();
@@ -149,7 +156,8 @@ function sync2() {
 	console.log("Sync: step #2 started.");
 
 	// Filtering tasks.
-	var tasks = arrayDiff(wunderlistTasks, JSON.parse(localStorage.getItem('SyncedTasks')));
+	var tasks = arrayDiff(wunderlistTaskIDs, 
+		JSON.parse(localStorage.getItem('SyncedTasks')));
 
 	// Saving number of tasks.
 	leftToSync = tasks.length;
@@ -200,7 +208,7 @@ function pushTask(wl_task_id) {
     xmlHttp.setRequestHeader("x-api-user", wundericaConfig.HabiticaClient);
     // Sending request.
     xmlHttp.send(JSON.stringify({
-    	"text": wl_task_id,
+    	"text": "[Wunderica] " + wunderlistTaskObjects[wl_task_id].title,
     	"type": "todo"
     }));
     // Decrementing the counter.
