@@ -10,6 +10,13 @@
  ******************************************************************************/
 
 /*******************************************************************************
+ * Initialization.
+ ******************************************************************************/
+
+HabitTools.config.User = wundericaConfig.HabiticaClient;
+HabitTools.config.Key = wundericaConfig.HabiticaToken;
+
+/*******************************************************************************
  * connect()
  *------------------------------------------------------------------------------
  * Stores needed credentials and reloads the page.
@@ -146,7 +153,8 @@ function sync1check() {
 //******************************************************************************
 
 // Number of tasks, not yet pushed to Habitica.
-var leftToSync = 100; // Just large number.
+var tasksLeftToAdd = 100;
+var tasksLeftToComplete = 100;
 
 function sync2() {
 	// Updating current step.
@@ -156,16 +164,55 @@ function sync2() {
 	console.log("Sync: step #2 started.");
 
 	// Filtering tasks.
-	var tasks = arrayDiff(wunderlistTaskIDs, 
-		JSON.parse(localStorage.getItem('SyncedTasks')));
+	var tasks = arrayDiff(
+		wunderlistTaskIDs, 
+		JSON.parse(localStorage.getItem('SyncedTasks'))
+	);
 
 	// Saving number of tasks.
-	leftToSync = tasks.length;
-	console.log(leftToSync + " tasks need to be synced.");
+	tasksLeftToAdd = tasks.length;
+	tasksLeftToComplete = 0;
+	console.log(tasksLeftToAdd + " tasks need to be synced.");
 
 	// Syncing tasks.
 	for (i in tasks) {
-		pushTask(tasks[i]);
+		// Wunderlist task ID.
+		var wlID = tasks[i];
+		// Adding this task to Habitica.
+		HabitTools.addTask(
+			// Task title.
+			"[Wunderica] " + wunderlistTaskObjects[wlID].title,
+			// Task type.
+			"todo",
+			// Handler.
+			function(status, response) {
+				// We tried to add a task.
+				tasksLeftToAdd -= 1;
+				// Was our trial successful?
+				if (status == 200) {
+					// Now we need to mark this task as complete.
+					tasksLeftToComplete += 1;
+					// Getting the Habitica ID.
+					var hID = response.id;
+					// Adding a new request, now to complete added task.
+					HabitTools.completeTask(
+						// Task ID.
+						hID,
+						// Handler.
+						function (status, response) {
+							if (status == 200) {
+								// Task was completed.
+								tasksLeftToComplete -= 1;
+						    	// Saving its Wunderlist ID.
+						    	addTaskToStorage(wlID);
+						   		// Updating statistics.
+						   		increaseCounter('#Tasks');
+					   		}
+						}
+					);
+				}
+			}
+		);
 	}
 
 	// Setting checker.
@@ -173,8 +220,8 @@ function sync2() {
 }
 
 function sync2check() {
-	// Checking.
-	if (leftToSync == 0) {
+	// Checking whether all tasks were added and completed.
+	if (tasksLeftToAdd == 0 && tasksLeftToComplete == 0) {
 		// Debug.
 		console.log("Sync: step #2 finished.");
 		// Triggering next step.
@@ -184,59 +231,6 @@ function sync2check() {
 		// Check again in 500 ms.
 		window.setTimeout(sync2check, 500);
 	}
-}
-
-function pushTask(wl_task_id) {
-	// Debug.
-	console.log("Pushing task WL-#" + wl_task_id);
-	// Request to push a task.
-	var xmlHttp = new XMLHttpRequest();
-	// URL.
-    xmlHttp.open("POST", "https://habitica.com:443/api/v2/user/tasks", true);
-    // Handler.
-    xmlHttp.onreadystatechange = function() {
-    	if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-	    	// Getting server answer.
-	    	var response = JSON.parse(this.responseText);
-	    	// Marking added task as completed.
-	    	completeTask(wl_task_id, response.id);
-    	}
-	};
-	// Headers.
-	xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xmlHttp.setRequestHeader("x-api-key", wundericaConfig.HabiticaToken);
-    xmlHttp.setRequestHeader("x-api-user", wundericaConfig.HabiticaClient);
-    // Sending request.
-    xmlHttp.send(JSON.stringify({
-    	"text": "[Wunderica] " + wunderlistTaskObjects[wl_task_id].title,
-    	"type": "todo"
-    }));
-    // Decrementing the counter.
-	leftToSync -= 1;
-}
-
-function completeTask(wl_task_id, h_task_id) {
-	// Debug.
-	console.log("Completing task H-#" + h_task_id);
-	// Request to complete task.
-	var xmlHttp = new XMLHttpRequest();
-	// URL.
-    xmlHttp.open("POST", "https://habitica.com:443/api/v2/user/tasks/" + h_task_id + "/up", true);
-    // Handler.
-    xmlHttp.onreadystatechange = function() {
-    	if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-	    	// Task was completed. Saving its Wunderlist id.
-	    	addTaskToStorage(wl_task_id);
-	   		// Updating statistics.
-	   		increaseCounter('#Tasks');
-    	}
-	};
-	// Headers.
-	xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xmlHttp.setRequestHeader("x-api-key", wundericaConfig.HabiticaToken);
-    xmlHttp.setRequestHeader("x-api-user", wundericaConfig.HabiticaClient);
-    // Sending the request.
-    xmlHttp.send();
 }
 
 //******************************************************************************
