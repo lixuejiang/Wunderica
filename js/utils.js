@@ -17,24 +17,3 @@
 function arrayDiff(a, b) {
     return a.filter(function(i) { return b.indexOf(i) < 0; });
 };
-
-/**
- * @function    addTaskToStorage
- * @description Adds Wunderlist task ID into SyncedTasks storage.
- * @param       wl_task_id  Wunderlist task ID
- */
-function addTaskToStorage(wl_task_id) {
-	var tasks = JSON.parse(localStorage.getItem('SyncedTasks'));
-	tasks.push(wl_task_id);
-	localStorage.setItem('SyncedTasks', JSON.stringify(tasks));
-}
-
-/**
- * @function    increaseCounter
- * @description Increases counter, stored in localStorage under the key str.
- * @param       str  counter key
- */
-function increaseCounter(str) {
-	var num = JSON.parse(localStorage.getItem(str));
-	localStorage.setItem(str, num + 1);
-}

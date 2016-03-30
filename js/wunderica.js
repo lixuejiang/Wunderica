@@ -96,9 +96,6 @@ function sync() {
 var listsLeft = 100; // Just huge number.
 
 function sync1() {
-	// Loading task storage from localStorage.
-	TaskStorage.load();
-
 	// Updating current step.
 	syncStep = 1;
 
@@ -168,15 +165,9 @@ function sync2() {
 
 	// Filtering tasks.
 	var tasks = arrayDiff(
-		wunderlistTaskIDs, 
-		JSON.parse(localStorage.getItem('SyncedTasks'))
+		wunderlistTaskIDs,
+		WundericaStorage.tasks()
 	);
-
-	console.log(wunderlistTaskIDs);
-	console.log(JSON.parse(localStorage.getItem('SyncedTasks')));
-	console.log(tasks);
-
-	//return;
 
 	// Saving number of tasks.
 	tasksLeftToAdd = tasks.length;
@@ -212,10 +203,9 @@ function sync2() {
 									// Task was completed.
 									tasksLeftToComplete -= 1;
 							    	// Saving its Wunderlist ID.
-							    	TaskStorage.addTask(wlID);
-							    	//addTaskToStorage(wlID);
-							   		// Updating statistics.
-							   		//increaseCounter('#Tasks');
+							    	WundericaStorage.addTask(wlID);
+							   		// Increasing the counter.
+							   		WundericaStorage.increase('#Tasks');
 						   		}
 							}
 						);
@@ -249,9 +239,6 @@ function sync2check() {
 //******************************************************************************
 
 function sync3() {
-	// Saving task storage.
-	TaskStorage.save();
-
 	// Updating sync date.
 	var now = new Date();
 	localStorage.setItem('LastSync', now.toLocaleDateString() + " " + 
