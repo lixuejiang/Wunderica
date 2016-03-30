@@ -169,6 +169,12 @@ function sync2() {
 		JSON.parse(localStorage.getItem('SyncedTasks'))
 	);
 
+	console.log(wunderlistTaskIDs);
+	console.log(JSON.parse(localStorage.getItem('SyncedTasks')));
+	console.log(tasks);
+
+	return;
+
 	// Saving number of tasks.
 	tasksLeftToAdd = tasks.length;
 	tasksLeftToComplete = 0;
@@ -250,35 +256,4 @@ function sync3() {
 function sync3reload() {
 	// TODO!
 	//location.reload();
-}
-
-//******************************************************************************
-// getHabiticaTasks(type)
-// Loads Habitica tasks of particular type and returns them.
-//******************************************************************************
-
-function getHabiticaTasks(type) {
-	// Request to push a task.
-	var xmlHttp = new XMLHttpRequest();
-
-	// URL.
-	// TODO: Do it asynchronous.
-    xmlHttp.open("GET", "https://habitica.com:443/api/v2/user/tasks", false);
-
-	// Headers.
-	xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xmlHttp.setRequestHeader("x-api-key", wundericaConfig.HabiticaToken);
-    xmlHttp.setRequestHeader("x-api-user", wundericaConfig.HabiticaClient);
-
-    // Sending request.
-    xmlHttp.send();
-
-    // Filtering response.
-    var response = JSON.parse(xmlHttp.responseText);
-    var result = response.filter(function(i) { 
-    	return i.type == type
-    });
-
-    // Done.
-    return result;
 }
