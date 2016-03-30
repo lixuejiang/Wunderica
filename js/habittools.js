@@ -11,7 +11,7 @@
 
 var HabitTools = (function() {
 
-	// Variable for private section.
+	// Variable for public section.
 	var pub = {};
 
 	/***************************************************************************
