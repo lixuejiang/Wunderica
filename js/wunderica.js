@@ -96,6 +96,9 @@ function sync() {
 var listsLeft = 100; // Just huge number.
 
 function sync1() {
+	// Loading task storage from localStorage.
+	TaskStorage.load();
+
 	// Updating current step.
 	syncStep = 1;
 
@@ -173,7 +176,7 @@ function sync2() {
 	console.log(JSON.parse(localStorage.getItem('SyncedTasks')));
 	console.log(tasks);
 
-	return;
+	//return;
 
 	// Saving number of tasks.
 	tasksLeftToAdd = tasks.length;
@@ -182,43 +185,44 @@ function sync2() {
 
 	// Syncing tasks.
 	for (i in tasks) {
-		// Wunderlist task ID.
-		var wlID = tasks[i];
 		// Adding this task to Habitica.
-		HabitTools.addTask(
-			// Task title.
-			"[Wunderica] " + wunderlistTaskObjects[wlID].title,
-			// Task type.
-			"todo",
-			// Handler.
-			function(status, response) {
-				// We tried to add a task.
-				tasksLeftToAdd -= 1;
-				// Was our trial successful?
-				if (status == 200) {
-					// Now we need to mark this task as complete.
-					tasksLeftToComplete += 1;
-					// Getting the Habitica ID.
-					var hID = response.id;
-					// Adding a new request, now to complete added task.
-					HabitTools.completeTask(
-						// Task ID.
-						hID,
-						// Handler.
-						function (status, response) {
-							if (status == 200) {
-								// Task was completed.
-								tasksLeftToComplete -= 1;
-						    	// Saving its Wunderlist ID.
-						    	addTaskToStorage(wlID);
-						   		// Updating statistics.
-						   		increaseCounter('#Tasks');
-					   		}
-						}
-					);
+		(function (wlID) {
+			HabitTools.addTask(
+				// Task title.
+				"[Wunderica] " + wunderlistTaskObjects[wlID].title,
+				// Task type.
+				"todo",
+				// Handler.
+				function(status, response) {
+					// We tried to add a task.
+					tasksLeftToAdd -= 1;
+					// Was our trial successful?
+					if (status == 200) {
+						// Now we need to mark this task as complete.
+						tasksLeftToComplete += 1;
+						// Getting the Habitica ID.
+						var hID = response.id;
+						// Adding a new request, now to complete added task.
+						HabitTools.completeTask(
+							// Task ID.
+							hID,
+							// Handler.
+							function (status, response) {
+								if (status == 200) {
+									// Task was completed.
+									tasksLeftToComplete -= 1;
+							    	// Saving its Wunderlist ID.
+							    	TaskStorage.addTask(wlID);
+							    	//addTaskToStorage(wlID);
+							   		// Updating statistics.
+							   		//increaseCounter('#Tasks');
+						   		}
+							}
+						);
+					}
 				}
-			}
-		);
+			);
+		})(tasks[i]);
 	}
 
 	// Setting checker.
@@ -245,10 +249,14 @@ function sync2check() {
 //******************************************************************************
 
 function sync3() {
+	// Saving task storage.
+	TaskStorage.save();
+
 	// Updating sync date.
 	var now = new Date();
 	localStorage.setItem('LastSync', now.toLocaleDateString() + " " + 
 		now.toLocaleTimeString());
+
 	// Reloading after a wait.
 	window.setTimeout(sync3reload, 1000);
 }
