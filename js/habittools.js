@@ -37,15 +37,16 @@ var HabitTools = (function() {
 
 	/**
 	 * @function NewRequest
-	 * @description Creates a new POST request object for sending data to Habitica.
-	 * @param url     URL for POST request.
+	 * @description Creates a new request object for sending data to Habitica.
+	 * @param method  Request method.
+	 * @param url     URL for request.
 	 * @param data    Request data.
 	 * @param handler User handler for the request result.
 	 */
-	function NewRequest(url, data, handler) {
+	function NewRequest(method, url, data, handler) {
 		// Creating a HTTP request.
 		var xmlHttp = new XMLHttpRequest();
-	    xmlHttp.open("POST", url, true);
+	    xmlHttp.open(method, url, true);
 		xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 	    xmlHttp.setRequestHeader("x-api-key", pub.config.Key);
 	    xmlHttp.setRequestHeader("x-api-user", pub.config.User);
@@ -106,6 +107,7 @@ var HabitTools = (function() {
 	pub.addTask = function(text, type, handler) {
 		// Creating a HTTP request.
 		var xmlHttp = NewRequest(
+			"POST",
 			"https://habitica.com:443/api/v2/user/tasks",
 			{"text": text, "type": type},
 			handler
@@ -123,7 +125,25 @@ var HabitTools = (function() {
 	pub.completeTask = function(id, handler) {
 		// Creating a HTTP request.
 		var xmlHttp = NewRequest(
+			"POST",
 			"https://habitica.com:443/api/v2/user/tasks/" + id + "/up",
+			"",
+			handler
+		);
+		// Adding the request to the queue.
+		RequestQueue.push(xmlHttp);
+	};
+
+	/**
+	 * @function getTasks
+	 * @description Returns all tasks of the particular type.
+	 * @param handler User handler.
+	 */
+	pub.getTasks = function(handler) {
+		// Creating a HTTP request.
+		var xmlHttp = NewRequest(
+			"GET",
+			"https://habitica.com:443/api/v2/user/tasks",
 			"",
 			handler
 		);
