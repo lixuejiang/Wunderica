@@ -5,7 +5,7 @@
  * AUTHORS files respectively or in its git repository:
  * https://github.com/kmingulov/Wunderica
  *******************************************************************************
- * wunderica.js is a main Wunderica Javascript file. It contains functions for
+ * Wunderica.js is a main Wunderica Javascript file. It contains functions for
  * synchronization between Wunderlist and Habitica.
  ******************************************************************************/
 

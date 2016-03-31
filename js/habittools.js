@@ -5,7 +5,7 @@
  * AUTHORS files respectively or in its git repository:
  * https://github.com/kmingulov/Wunderica
  *******************************************************************************
- * habittools.js is an auxiliary file containing tools for working with 
+ * HabitTools.js is an auxiliary file containing tools for working with 
  * Habitica. Particulary, here is Habitica request stack located.
  ******************************************************************************/
 

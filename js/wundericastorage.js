@@ -5,7 +5,7 @@
  * AUTHORS files respectively or in its git repository:
  * https://github.com/kmingulov/Wunderica
  *******************************************************************************
- * wundericastorage.js is a small auxiliary object for managing Wunderica
+ * WundericaStorage.js is a small auxiliary object for managing Wunderica
  * statistics.
  ******************************************************************************/
 

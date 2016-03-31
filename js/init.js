@@ -5,7 +5,7 @@
  * AUTHORS files respectively or in its git repository:
  * https://github.com/kmingulov/Wunderica
  *******************************************************************************
- * init.js initializes Wunderica; in particular it loads Wunderlist SDK.
+ * Init.js initializes Wunderica; in particular it loads Wunderlist SDK.
  ******************************************************************************/
 
 // Setting up configured flag.
@@ -15,7 +15,7 @@ var configured = (lastUpdate != undefined);
 // Setting up Wunderica configuration.
 if (configured) {
 	wundericaConfig = {
-		'WunderlistClientID': WunderlistClientID,
+		'WunderlistClientID': WundericaConfig.WunderlistClientID,
 		'WunderlistToken':    localStorage.getItem('WunderlistToken'),
 		'HabiticaClient':     localStorage.getItem('HabiticaClient'),
 		'HabiticaToken':      localStorage.getItem('HabiticaToken')

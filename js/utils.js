@@ -5,7 +5,7 @@
  * AUTHORS files respectively or in its git repository:
  * https://github.com/kmingulov/Wunderica
  *******************************************************************************
- * utils.js contains basic utilities, needed for Wunderica.
+ * Utils.js contains basic utilities, needed for Wunderica.
  ******************************************************************************/
 
 var Utils = (function() {
