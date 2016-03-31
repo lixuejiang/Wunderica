@@ -8,9 +8,6 @@
  * init.js initializes Wunderica; in particular it loads Wunderlist SDK.
  ******************************************************************************/
 
-// Loading Wunderlist SDK.
-var wlSDK = wunderlist.sdk;
-
 // Setting up configured flag.
 var lastUpdate = localStorage.getItem('LastSync');
 var configured = (lastUpdate != undefined);

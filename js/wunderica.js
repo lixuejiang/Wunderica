@@ -77,7 +77,7 @@ function sync() {
 	wunderlistTaskObjects = {};
 
 	// Initializing SDK.
-	wunderlistSDK = new wlSDK({
+	wunderlistSDK = new wunderlist.sdk({
       'accessToken': wundericaConfig.WunderlistToken,
       'clientID':    wundericaConfig.WunderlistClientID
     });
