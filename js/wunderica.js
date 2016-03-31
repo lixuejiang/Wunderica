@@ -164,7 +164,7 @@ function sync2() {
 	console.log("Sync: step #2 started.");
 
 	// Filtering tasks.
-	var tasks = arrayDiff(
+	var tasks = Utils.arrayDiff(
 		wunderlistTaskIDs,
 		WundericaStorage.tasks()
 	);
