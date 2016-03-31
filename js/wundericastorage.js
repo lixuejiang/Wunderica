@@ -57,6 +57,14 @@ var WundericaStorage = (function() {
 			now.toLocaleTimeString());
 	};
 
+	/**
+	 * @function lastDate
+	 * @description Returns last sync date.
+	 */
+	pub.lastDate = function () {
+		return localStorage.getItem('LastSync');
+	};
+
 	// Returning the public section.
 	return pub;
 
