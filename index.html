@@ -22,7 +22,7 @@
       <p>Syncs your Wunderlist tasks to Habitica.</p>
       <p>
         <span id="accounts-connected">
-          <button type="button" class="btn btn-info" onClick="javascript:sync();">
+          <button type="button" class="btn btn-info" onClick="javascript:Wunderica.sync();">
             Sync
           </button>
           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#disconnectModal">
@@ -133,11 +133,14 @@
     <!-- Wunderlist JS SDK -->
     <script type="text/javascript" src="js/Wunderlist/wunderlist.sdk.min.js"></script>
     <!-- Wunderica files -->
-    <script type="text/javascript" src="js/WundericaConfig.js"></script>
     <script type="text/javascript" src="js/Utils.js"></script>
-    <script type="text/javascript" src="js/Init.js"></script>
-    <script type="text/javascript" src="js/WundericaStorage.js"></script>
     <script type="text/javascript" src="js/HabitTools.js"></script>
+    <script type="text/javascript" src="js/WundericaConfig.js"></script>
+    <script type="text/javascript" src="js/WundericaStorage.js"></script>
     <script type="text/javascript" src="js/Wunderica.js"></script>
+    <!-- Starting Wunderica -->
+    <script type="text/javascript">
+      Wunderica.start();
+    </script>
   </body>
 </html>

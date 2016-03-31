@@ -8,7 +8,7 @@
  * Utils.js contains basic utilities, needed for Wunderica.
  ******************************************************************************/
 
-var Utils = (function() {
+var Utils = (function () {
 
 	// Variable for public section.
 	var pub = {};
@@ -23,7 +23,7 @@ var Utils = (function() {
 	 * @param       a first array
 	 * @param       b second array
 	 */
-	pub.arrayDiff = function(a, b) {
+	pub.arrayDiff = function (a, b) {
 	    return a.filter(function(i) { return b.indexOf(i) < 0; });
 	};
 
