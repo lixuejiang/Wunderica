@@ -32,22 +32,13 @@ var Wunderica = (function () {
 	/// Configuration.
 	var config = {};
 
-	/// Wunderlist SDK.
-	var wunderlistSDK;
-
-	/// Completed tasks, loaded from Wunderlist (IDs).
-	var wunderlistTaskIDs = [];
-	/// Completed tasks, loaded from Wunderlist (objects).
-	var wunderlistTaskObjects = {};
-
-	/// Current sync step.
-	var syncStep = 0;
-
-	//
-	// TODO
-	//
-	/// Number of lists, not processed yet by asynchronous fetch function.
-	var listsLeft = 100;
+	/// Tasks fetched from Wunderlist (IDs).
+	var wunderlistIDs;
+	/// Tasks fetched from Wunderlist (objects).
+	var wunderlistObjects;
+	/// Subtasks fetched from Wunderlist.
+	var wunderlistSubtasks;
+	
 	/// Number of tasks, not yet pushed to Habitica.
 	var tasksLeftToAdd = 100;
 	var tasksLeftToComplete = 100;
@@ -75,11 +66,11 @@ var Wunderica = (function () {
 				'HabiticaToken':      localStorage.getItem('HabiticaToken')
 			};
 
-			// Establishing connecto to Wunderlist.
-			wunderlistSDK = new wunderlist.sdk({
+		    // Configuring WunderTools.
+		    WunderTools.config = {
 		      'accessToken': config.WunderlistToken,
 		      'clientID':    config.WunderlistClientID
-		    });
+		    };
 			// Configuring HabitTools.
 			HabitTools.config.User = config.HabiticaClient;
 			HabitTools.config.Key = config.HabiticaToken;
@@ -145,13 +136,17 @@ var Wunderica = (function () {
 	 * @description Syncs Wunderlist tasks to Habitica.
 	 */ 
 	pub.sync = function () {
-		// Initializing sync variables.
-		wunderlistTaskIDs = [];
-		wunderlistTaskObjects = {};
-		syncStep = 0;
-
-		// Starting the first sync step.
-		sync1();
+		// Fetching tasks from Wunderlist by WunderTools.
+		WunderTools.fetchTasks(function(IDs, objects, subtasks) {
+			// Some debug information.
+			console.log("Fetched: " + IDs.length + " tasks.");
+			// Saving everything.
+			wunderlistIDs = IDs;
+			wunderlistObjects = objects;
+			wunderlistSubtasks = subtasks;
+			// Triggering the next step.
+			sync2();
+		});
 	}
 
 	/***************************************************************************
@@ -159,85 +154,21 @@ var Wunderica = (function () {
 	 **************************************************************************/
 
 	/**
-	 * @name sync1
-	 * @description The first sync step.
-	 */
-	function sync1() {
-		// Updating current step.
-		syncStep = 1;
-
-		// Debug.
-		console.log("Sync: step #1 started.");
-
-		// Initialization.
-		wunderlistTaskIDs = [];
-		wunderlistTaskObjects = {};
-		listLeft = 100; // Just huge number.
-
-		// Creating handlers for lists and tasks.
-		wunderlistSDK.http.lists.all().done(function (lists) {
-			// Saving number of lists.
-			listsLeft = lists.length;
-			// Iterating over all lists.
-			for (i in lists) {
-				// true for completed tasks.
-				var listTasks = wunderlistSDK.http.tasks.forList(lists[i].id, true)
-					.done(function (tasks) {
-						// Iterating over all tasks.
-						for (j in tasks) {
-							// Saving ID and object.
-							wunderlistTaskIDs.push(tasks[j].id);
-							wunderlistTaskObjects[tasks[j].id] = tasks[j];
-						}
-						// One list finished!
-						listsLeft -= 1;
-					});
-			}
-		});
-
-		// Setting up checker.
-		window.setTimeout(sync1check, 500);
-	}
-
-	/**
-	 * @name sync1check
-	 * @description Checks, whether the first step is completed.
-	 */
-	function sync1check() {
-		// Checking.
-		if (listsLeft == 0) {
-			// Debug.
-			console.log("Fetched " + wunderlistTaskIDs.length + " completed tasks.");
-			console.log("Sync: step #1 finished.");
-			// Triggering next step.
-			sync2();
-		}
-		else {
-			// Check again in 500 ms.
-			window.setTimeout(sync1check, 500);
-		}
-	}
-
-	/**
 	 * @name sync2
 	 * @description The second sync step.
 	 */
 	function sync2() {
-		// Updating current step.
-		syncStep = 2;
-
-		// Debug.
-		console.log("Sync: step #2 started.");
-
 		// Filtering tasks.
 		var tasks = Utils.arrayDiff(
-			wunderlistTaskIDs,
+			wunderlistIDs,
 			WundericaStorage.tasks()
 		);
 
 		// Saving number of tasks.
 		tasksLeftToAdd = tasks.length;
 		tasksLeftToComplete = 0;
+
+		// Debug information.
 		console.log(tasksLeftToAdd + " tasks need to be synced.");
 
 		// Syncing tasks.
@@ -246,9 +177,15 @@ var Wunderica = (function () {
 			(function (wlID) {
 				HabitTools.addTask(
 					// Task title.
-					"[Wunderica] " + wunderlistTaskObjects[wlID].title,
+					"[Wunderica] " + wunderlistObjects[wlID].title,
 					// Task type.
 					"todo",
+					// Subtasks.
+					wunderlistSubtasks[wlID]
+						// Sorting subtasks by ID.
+						.sort(function(a, b) { return a.id - b.id; })
+						// Getting only titles.
+						.map(function(val) { return val.title; }),
 					// Handler.
 					function(status, response) {
 						// We tried to add a task.
