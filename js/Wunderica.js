@@ -175,17 +175,23 @@ var Wunderica = (function () {
 		for (i in tasks) {
 			// Adding this task to Habitica.
 			(function (wlID) {
+				// Preparing subtasks (if any).
+				var subs = [];
+				if (wunderlistSubtasks[wlID] != undefined) {
+					subs = wunderlistSubtasks[wlID]
+						// Sorting subtasks by ID.
+						.sort(function(a, b) { return a.id - b.id; })
+						// Getting only titles.
+						.map(function(val) { return val.title; });
+				}
+				// Adding the task.
 				HabitTools.addTask(
 					// Task title.
 					"[Wunderica] " + wunderlistObjects[wlID].title,
 					// Task type.
 					"todo",
 					// Subtasks.
-					wunderlistSubtasks[wlID]
-						// Sorting subtasks by ID.
-						.sort(function(a, b) { return a.id - b.id; })
-						// Getting only titles.
-						.map(function(val) { return val.title; }),
+					subs,
 					// Handler.
 					function(status, response) {
 						// We tried to add a task.
