@@ -98,18 +98,25 @@ var HabitTools = (function() {
 	/**
 	 * @function addTask
 	 * @description Adds a task to Habitica.
-	 * @param text    Task title.
-	 * @param type    Task type (todo/daily/habit).
-	 * @param handler Function, which will be called after. This function must
-	 *                have two arguments: the first one is XMLHttpRequest 
-	 *                status, the second one is a Habitica response.
+	 * @param text     Task title.
+	 * @param type     Task type (todo/daily/habit).
+	 * @param subtasks List with completed subtasks.
+	 * @param handler  Function, which will be called after. This function must
+	 *                 have two arguments: the first one is XMLHttpRequest 
+	 *                 status, the second one is a Habitica response.
 	 */
-	pub.addTask = function(text, type, handler) {
+	pub.addTask = function(text, type, subtasks, handler) {
 		// Creating a HTTP request.
 		var xmlHttp = NewRequest(
 			"POST",
 			"https://habitica.com:443/api/v2/user/tasks",
-			{"text": text, "type": type},
+			{
+				"text": text, 
+				"type": type, 
+				"checklist": subtasks.map(function(val) {
+					return {"text": val, "completed": true};
+				})
+			},
 			handler
 		);
 		// Adding the request to the queue.
