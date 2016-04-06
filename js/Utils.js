@@ -27,6 +27,16 @@ var Utils = (function () {
 	    return a.filter(function(i) { return b.indexOf(i) < 0; });
 	};
 
+	/**
+	 * @function getURLParameter
+	 * @description Returns value of the URL parameter.
+	 * @param name URL parameter
+	 * @see http://stackoverflow.com/questions/11582512/how-to-get-url-parameters-with-javascript/11582513#11582513
+	 */
+	pub.getURLParameter = function (name) {
+  		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+	}
+
 	// Returning the public section.
 	return pub;
 
