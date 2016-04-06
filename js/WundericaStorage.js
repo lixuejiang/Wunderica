@@ -38,11 +38,11 @@ var WundericaStorage = (function() {
 	};
 
 	/**
-	 * @function habitDailyLinks
-	 * @description Returns the habit and daily links.
+	 * @function dailyLinks
+	 * @description Returns the daily links.
 	 */
-	pub.habitDailyLinks = function () {
-		return JSON.parse(localStorage.getItem('HabitDailyLinks'));
+	pub.dailyLinks = function () {
+		return JSON.parse(localStorage.getItem('DailyLinks'));
 	}
 
 	/**

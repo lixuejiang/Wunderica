@@ -171,18 +171,18 @@ var Wunderica = (function () {
 		// Debug information.
 		console.log(tasksLeftToAdd + " tasks need to be synced.");
 
-		// Loading habit/daily links.
-		var links = WundericaStorage.habitDailyLinks();
+		// Loading daily links.
+		var dailyLinks = WundericaStorage.dailyLinks();
 
 		// Syncing tasks.
 		for (i in tasks) {
 			(function (wlID) {
-				// Checking whether this task is habit/daily link.
-				if (links[wunderlistObjects[wlID].title] != undefined) {
-					// This is a habit/daily, triggering it.
+				// Checking whether this task is a daily link.
+				if (dailyLinks[wunderlistObjects[wlID].title] != undefined) {
+					// This is a daily, completing it.
 					HabitTools.completeTask(
 						// Task ID.
-						links[wunderlistObjects[wlID].title],
+						dailyLinks[wunderlistObjects[wlID].title],
 						// Handler.
 						function (status, response) {
 							if (status == 200) {
@@ -191,7 +191,7 @@ var Wunderica = (function () {
 						    	// Saving its Wunderlist ID.
 						    	WundericaStorage.addTask(wlID);
 						   		// Increasing the counter.
-						   		WundericaStorage.increase('#Tasks');
+						   		WundericaStorage.increase('#Dailies');
 					   		}
 						}
 					);
