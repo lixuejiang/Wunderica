@@ -18,12 +18,10 @@ var Wunderica = (function () {
 	 * Public fields.
 	 **************************************************************************/
 
-	/// Last update date.
-	pub.lastUpdate = undefined;
-
-	/// Flag indicating whether Wunderica is configured (i.e. is connected to
-	/// Habitica and Wunderlist).
-	pub.configured = undefined;
+	/// Flag indicating whether Wunderica is connected to Wunderlist.
+	pub.connectedToWunderlist = undefined;
+	/// Flag indicating whether Wunderica is connected to Habitica.
+	pub.connectedToHabitica = undefined;
 
 	/***************************************************************************
 	 * Private fields.
@@ -52,74 +50,50 @@ var Wunderica = (function () {
 	 * @description Starts Wunderica.
 	 */
 	pub.start = function() {
-		// Setting up configured flag.
-		pub.lastUpdate = WundericaStorage.lastDate();
-		pub.configured = (pub.lastUpdate != undefined);
+		// Setting up config.
+		config = {
+			'WunderlistClientID': WundericaConfig.WunderlistClientID,
+			'WunderlistToken':    localStorage.getItem('WunderlistToken'),
+			'HabiticaClient':     localStorage.getItem('HabiticaClient'),
+			'HabiticaToken':      localStorage.getItem('HabiticaToken')
+		};
 
-		// Setting up Wunderica configuration.
-		if (pub.configured) {
-			// Setting up config.
-			config = {
-				'WunderlistClientID': WundericaConfig.WunderlistClientID,
-				'WunderlistToken':    localStorage.getItem('WunderlistToken'),
-				'HabiticaClient':     localStorage.getItem('HabiticaClient'),
-				'HabiticaToken':      localStorage.getItem('HabiticaToken')
-			};
+		// Setting up "connected" flags.
+		pub.connectedToWunderlist = config.WunderlistToken != '';
+		pub.connectedToHabitica = 
+			config.HabiticaClient != '' && config.HabiticaToken != '';
 
-		    // Configuring WunderTools.
-		    WunderTools.config = {
-		      'accessToken': config.WunderlistToken,
-		      'clientID':    config.WunderlistClientID
-		    };
-			// Configuring HabitTools.
-			HabitTools.config.User = config.HabiticaClient;
-			HabitTools.config.Key = config.HabiticaToken;
-		}
-		else {
-			config = {
-				'WunderlistClientID': WundericaConfig.WunderlistClientID
-			};
-		}
+	    // Configuring WunderTools.
+	    WunderTools.config = {
+	      'accessToken': config.WunderlistToken,
+	      'clientID':    config.WunderlistClientID
+	    };
 
-		//
-		// TODO: Move to WundericaGUI!
-		//
-
-		// Configuring interface.
-		if (pub.configured) {
-			$('#accounts-connected').show();
-			$('#stat-last-sync').html(localStorage.getItem('LastSync'));
-			$('#stat-tasks-synced').html(localStorage.getItem('#Tasks'));
-			$('#stat-dailies-synced').html(localStorage.getItem('#Dailies'));
-			$('#stat-habits-triggered').html(localStorage.getItem('#Habits'));
-			$('#stats').show();
-		}
-		else {
-			$('#accounts-not-connected').show();
-		}
+		// Configuring HabitTools.
+		HabitTools.config.User = config.HabiticaClient;
+		HabitTools.config.Key = config.HabiticaToken;
 	};
 
 	/**
 	 * @name connect
-	 * @description 
+	 * @description Connects Wunderica to Wunderlist.
+	 * @param wunderToken Wunderlist Auth Token
 	 */
-	pub.connect = function () {
-		//
-		// TODO: 
-		//
+	pub.connectToWunderlist = function (wunderToken) {
+		// Saving credentials.
+		localStorage.setItem('WunderlistToken', wunderToken);
+	};
 
+	/**
+	 * @name connectToHabitica
+	 * @description Connects Wunderica to Habitica.
+	 * @param habitClient Habitica Client ID
+	 * @param habitToken  Habitica Auth Token
+	 */
+	pub.connectToHabitica = function (habitClient, habitToken) {
 		// Credentials.
-		localStorage.setItem('WunderlistToken', $('#inputWunderToken').val());
-		localStorage.setItem('HabiticaClient',  $('#inputHabitClient').val());
-		localStorage.setItem('HabiticaToken',   $('#inputHabitToken').val());
-		// Stats.
-		localStorage.setItem('LastSync',    'never');
-		localStorage.setItem('SyncedTasks', '[]');
-		localStorage.setItem('#Tasks',      0);
-		localStorage.setItem('#Dailies',    0);
-		localStorage.setItem('#Habits',     0);
-		// Reloading the page.
-		location.reload();
+		localStorage.setItem('HabiticaClient',  habitClient);
+		localStorage.setItem('HabiticaToken',   habitToken);
 	};
 
 	/**
@@ -128,7 +102,6 @@ var Wunderica = (function () {
 	 */
 	pub.disconnect = function () {
 		localStorage.clear();
-		location.reload();
 	};
 
 	/**

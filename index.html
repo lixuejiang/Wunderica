@@ -20,20 +20,30 @@
       <!-- Header -->
       <h1>Wunderica</h1>
       <p>Syncs your Wunderlist tasks to Habitica.</p>
+      <hr>
       <p>
-        <span id="accounts-connected">
+        <div id="accounts-connected">
           <button type="button" class="btn btn-info" onClick="javascript:Wunderica.sync();">
             Sync
           </button>
           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#disconnectModal">
             Disconnect
           </button>
-        </span>
-        <span id="accounts-not-connected">
-          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#connectModal">
-            Connect
-          </button>
-        </span>
+        </div>
+
+        <div id="accounts-not-connected">
+          <p>You haven't connected your Wunderica to Habitica and/or Wunderlist yet.</p>
+          <span id="habitica-not-connected">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#connectModal">
+              Connect to Habitica
+            </button>
+          </span>
+          <span id="wlist-not-connected">
+            <a id="wlist-connect-btn" type="button" class="btn btn-success" href="">
+              Connect to Wunderlist
+            </a>
+          </span>
+        </div>
       </p>
       <!-- /Header -->
 
@@ -43,15 +53,12 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Connect to Wunderlist and Habitica</h4>
+              <h4 class="modal-title">Connect to Habitica</h4>
             </div>
             <div class="modal-body">
-              <div class="form-group row">
-                <label for="inputWunderToken" class="col-sm-4 form-control-label">Wunderlist Token</label>
-                <div class="col-sm-8">
-                  <input class="form-control" id="inputWunderToken" placeholder="Wunderlist Token">
-                </div>
-              </div>
+              <p>
+                Please, paste your Habitica Client ID and API Token from <a href="https://habitica.com/#/options/settings/api">here</a>.
+              </p>
               <div class="form-group row">
                 <label for="inputHabitClient" class="col-sm-4 form-control-label">Habitica Client ID</label>
                 <div class="col-sm-8">
@@ -66,7 +73,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-success" onClick="javascript:connect();">Connect</button>
+              <button type="button" class="btn btn-success" onClick="javascript:WundericaUI.connectToHabitica();">Connect</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -86,7 +93,7 @@
               <p>Are you <b>sure</b> you want to do this? You will lose all your statistics!</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-danger" onClick="javascript:disconnect();">Disconnect</button>
+              <button type="button" class="btn btn-danger" onClick="javascript:WundericaUI.disconnect();">Disconnect</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">I've changed my mind</button>
             </div>
           </div>
@@ -96,6 +103,7 @@
 
       <!-- Statistics -->
       <div id="stats">
+        <hr>
         <h2>Statistics</h2>
         <div class="row">
           <div class="col-md-6" id="sync-stats">
@@ -138,10 +146,13 @@
     <script type="text/javascript" src="js/WunderTools.js"></script>
     <script type="text/javascript" src="js/WundericaConfig.js"></script>
     <script type="text/javascript" src="js/WundericaStorage.js"></script>
+    <script type="text/javascript" src="js/WundericaUI.js"></script>
     <script type="text/javascript" src="js/Wunderica.js"></script>
     <!-- Starting Wunderica -->
     <script type="text/javascript">
+      WundericaStorage.start();
       Wunderica.start();
+      WundericaUI.start();
     </script>
   </body>
 </html>

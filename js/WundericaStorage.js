@@ -19,6 +19,32 @@ var WundericaStorage = (function() {
 	 **************************************************************************/
 
 	/**
+	 * @function start
+	 * @description Starts WundericaStorage.
+	 */
+	pub.start = function () {
+		// Checking, whether there are necessary fields in localStorage.
+		if (localStorage.getItem('WunderlistToken') == undefined)
+			localStorage.setItem('WunderlistToken', '');
+		if (localStorage.getItem('HabiticaClient') == undefined)
+			localStorage.setItem('HabiticaClient', '');
+		if (localStorage.getItem('HabiticaToken') == undefined)
+			localStorage.setItem('HabiticaToken', '');
+		if (localStorage.getItem('LastSync') == undefined)
+			localStorage.setItem('LastSync', 'never');
+		if (localStorage.getItem('SyncedTasks') == undefined)
+			localStorage.setItem('SyncedTasks', '[]');
+		if (localStorage.getItem('DailyLinks') == undefined)
+			localStorage.setItem('DailyLinks', '{}');
+		if (localStorage.getItem('#Tasks') == undefined)
+			localStorage.setItem('#Tasks', 0);
+		if (localStorage.getItem('#Dailies') == undefined)
+			localStorage.setItem('#Dailies', 0);
+		if (localStorage.getItem('#Habits') == undefined)
+			localStorage.setItem('#Habits', 0);
+	};
+
+	/**
 	 * @function addTasks
 	 * @description Adds a task to the task storage.
 	 * @param task task to be added
