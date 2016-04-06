@@ -171,56 +171,80 @@ var Wunderica = (function () {
 		// Debug information.
 		console.log(tasksLeftToAdd + " tasks need to be synced.");
 
+		// Loading habit/daily links.
+		var links = WundericaStorage.habitDailyLinks();
+
 		// Syncing tasks.
 		for (i in tasks) {
-			// Adding this task to Habitica.
 			(function (wlID) {
-				// Preparing subtasks (if any).
-				var subs = [];
-				if (wunderlistSubtasks[wlID] != undefined) {
-					subs = wunderlistSubtasks[wlID]
-						// Sorting subtasks by ID.
-						.sort(function(a, b) { return a.id - b.id; })
-						// Getting only titles.
-						.map(function(val) { return val.title; });
-				}
-				// Adding the task.
-				HabitTools.addTask(
-					// Task title.
-					"[Wunderica] " + wunderlistObjects[wlID].title,
-					// Task type.
-					"todo",
-					// Subtasks.
-					subs,
-					// Handler.
-					function(status, response) {
-						// We tried to add a task.
-						tasksLeftToAdd -= 1;
-						// Was our trial successful?
-						if (status == 200) {
-							// Now we need to mark this task as complete.
-							tasksLeftToComplete += 1;
-							// Getting the Habitica ID.
-							var hID = response.id;
-							// Adding a new request, now to complete added task.
-							HabitTools.completeTask(
-								// Task ID.
-								hID,
-								// Handler.
-								function (status, response) {
-									if (status == 200) {
-										// Task was completed.
-										tasksLeftToComplete -= 1;
-								    	// Saving its Wunderlist ID.
-								    	WundericaStorage.addTask(wlID);
-								   		// Increasing the counter.
-								   		WundericaStorage.increase('#Tasks');
-							   		}
-								}
-							);
+				// Checking whether this task is habit/daily link.
+				if (links[wunderlistObjects[wlID].title] != undefined) {
+					// This is a habit/daily, triggering it.
+					HabitTools.completeTask(
+						// Task ID.
+						links[wunderlistObjects[wlID].title],
+						// Handler.
+						function (status, response) {
+							if (status == 200) {
+								// Task was completed. No need to add.
+								tasksLeftToAdd -= 1;
+						    	// Saving its Wunderlist ID.
+						    	WundericaStorage.addTask(wlID);
+						   		// Increasing the counter.
+						   		WundericaStorage.increase('#Tasks');
+					   		}
 						}
+					);
+				}
+				// Adding this task.
+				else {
+					// Preparing subtasks (if any).
+					var subs = [];
+					if (wunderlistSubtasks[wlID] != undefined) {
+						subs = wunderlistSubtasks[wlID]
+							// Sorting subtasks by ID.
+							.sort(function(a, b) { return a.id - b.id; })
+							// Getting only titles.
+							.map(function(val) { return val.title; });
 					}
-				);
+					// Adding the task.
+					HabitTools.addTask(
+						// Task title.
+						"[Wunderica] " + wunderlistObjects[wlID].title,
+						// Task type.
+						"todo",
+						// Subtasks.
+						subs,
+						// Handler.
+						function(status, response) {
+							// We tried to add a task.
+							tasksLeftToAdd -= 1;
+							// Was our trial successful?
+							if (status == 200) {
+								// Now we need to mark this task as complete.
+								tasksLeftToComplete += 1;
+								// Getting the Habitica ID.
+								var hID = response.id;
+								// Adding a new request, now to complete added task.
+								HabitTools.completeTask(
+									// Task ID.
+									hID,
+									// Handler.
+									function (status, response) {
+										if (status == 200) {
+											// Task was completed.
+											tasksLeftToComplete -= 1;
+									    	// Saving its Wunderlist ID.
+									    	WundericaStorage.addTask(wlID);
+									   		// Increasing the counter.
+									   		WundericaStorage.increase('#Tasks');
+								   		}
+									}
+								);
+							}
+						}
+					);
+				}
 			})(tasks[i]);
 		}
 

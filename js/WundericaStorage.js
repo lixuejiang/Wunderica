@@ -38,6 +38,14 @@ var WundericaStorage = (function() {
 	};
 
 	/**
+	 * @function habitDailyLinks
+	 * @description Returns the habit and daily links.
+	 */
+	pub.habitDailyLinks = function () {
+		return JSON.parse(localStorage.getItem('HabitDailyLinks'));
+	}
+
+	/**
 	 * @function increase
 	 * @description Increases a counter.
 	 * @param counter counter name
