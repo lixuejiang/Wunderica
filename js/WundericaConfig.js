@@ -11,5 +11,7 @@
 // Wunderica configuration.
 var WundericaConfig = {
 	// Wunderlist client ID (can be found at developer.wunderlist.com/apps).
-	'WunderlistClientID': '15a1be9649de6363ba03'
+	'WunderlistClientID': '15a1be9649de6363ba03',
+	// Site URL.
+	'WundericaURL': 'http://kmingulov.github.io/wunderica/'
 };
