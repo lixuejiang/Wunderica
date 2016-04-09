@@ -130,6 +130,32 @@ var WunderTools = (function() {
 		window.setTimeout(function() { fetchTasksCheck(handler) }, 500);
 	};
 
+	/**
+	 * @name getAuthToken
+	 * @description Exchanges Wunderlist code for Auth Token.
+	 * @param handler Received Wunderlist code.
+	 */
+	pub.getAuthToken = function (code) {
+		// Creating an HTTP request.
+		var xmlHttp = new XMLHttpRequest();
+		// TODO: maybe synchronous?
+	    xmlHttp.open("POST", "https://www.wunderlist.com/oauth/access_token", true);
+		xmlHttp.setRequestHeader("Content-Type", "application/json");
+	    xmlHttp.setRequestHeader("X-Access-Token", "70266bfd04db3a710fdfbf9912e4ecd23c6aa40cbdfeea63c819b99171f5");
+	    xmlHttp.setRequestHeader("X-Client-ID", pub.config.clientID);
+	    // Sending the request.
+	    xmlHttp.send(JSON.stringify({
+	    	"client_id": pub.config.clientID,
+	    	"client_secret": "",
+	    	"code": code
+	    }));
+	    xmlHttp.onreadystatechange = function () {
+	    	if (xmlHttp.readyState == 4) {
+	    		console.log(xmlHttp.responseText);
+			}
+		};
+	};
+
 	// Returning the public section.
 	return pub;
 

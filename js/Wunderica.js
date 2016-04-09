@@ -107,18 +107,38 @@ var Wunderica = (function () {
 	/**
 	 * @name sync
 	 * @description Syncs Wunderlist tasks to Habitica.
+	 * @param messageHandler Function to handle sync messages. Possible 
+	 *                       messages:
+	 *   {"msg": "sync-start"}
+	 *     Sync has started.
+	 *   {"msg": "wlist-fetch-start"}
+	 *     Started to fetch tasks from Wunderlist.
+	 *   {"msg": "wlist-fetch-finish", "num": N}
+	 *     N completed tasks were fetched from Wunderlist.
+	 *   {"msg": "habit-push-start", "num": N}
+	 *     N tasks must be pushed to Habitica.
+	 *   {"msg": "habit-pushed-task"}
+	 *     1 task was pushed to Habitica.
+	 *   {"msg": "habit-push-finish"}
+	 *     Finished to push tasks to Habitica.
+	 *   {"msg": "sync-finish"}
+	 *     Sync has finished.
 	 */ 
-	pub.sync = function () {
+	pub.sync = function (messageHandler) {
+		// Sending the messages.
+		messageHandler({"msg": "sync-start"});
+		messageHandler({"msg": "wlist-fetch-start"});
+
 		// Fetching tasks from Wunderlist by WunderTools.
 		WunderTools.fetchTasks(function(IDs, objects, subtasks) {
-			// Some debug information.
-			console.log("Fetched: " + IDs.length + " tasks.");
+			// Sending the message.
+			messageHandler({"msg": "wlist-fetch-finish", "num": IDs.length});
 			// Saving everything.
 			wunderlistIDs = IDs;
 			wunderlistObjects = objects;
 			wunderlistSubtasks = subtasks;
 			// Triggering the next step.
-			sync2();
+			sync2(messageHandler);
 		});
 	}
 
@@ -129,8 +149,9 @@ var Wunderica = (function () {
 	/**
 	 * @name sync2
 	 * @description The second sync step.
+	 * @param messageHandler Function to handle sync messages.
 	 */
-	function sync2() {
+	function sync2(messageHandler) {
 		// Filtering tasks.
 		var tasks = Utils.arrayDiff(
 			wunderlistIDs,
@@ -141,8 +162,8 @@ var Wunderica = (function () {
 		tasksLeftToAdd = tasks.length;
 		tasksLeftToComplete = 0;
 
-		// Debug information.
-		console.log(tasksLeftToAdd + " tasks need to be synced.");
+		// Sending the message.
+		messageHandler({"msg": "habit-push-start", "num": tasksLeftToAdd});
 
 		// Loading daily links.
 		var dailyLinks = WundericaStorage.dailyLinks();
@@ -159,7 +180,9 @@ var Wunderica = (function () {
 						// Handler.
 						function (status, response) {
 							if (status == 200) {
-								// Task was completed. No need to add.
+								// Sending the message.
+								messageHandler({"msg": "habit-pushed-task"});
+								// Task was completed. Decreasing the counter.
 								tasksLeftToAdd -= 1;
 						    	// Saving its Wunderlist ID.
 						    	WundericaStorage.addTask(wlID);
@@ -205,6 +228,9 @@ var Wunderica = (function () {
 									// Handler.
 									function (status, response) {
 										if (status == 200) {
+											// Sending the message.
+											messageHandler({"msg": 
+												"habit-pushed-task"});
 											// Task was completed.
 											tasksLeftToComplete -= 1;
 									    	// Saving its Wunderlist ID.
@@ -222,42 +248,41 @@ var Wunderica = (function () {
 		}
 
 		// Setting checker.
-		window.setTimeout(sync2check, 500);
+		window.setTimeout(function () { sync2check(messageHandler); }, 500);
 	}
 
 	/**
 	 * @name sync2check
 	 * @description Checks, whether the second step is completed.
+	 * @param messageHandler Function to handle sync messages.
 	 */
-	function sync2check() {
+	function sync2check(messageHandler) {
 		// Checking whether all tasks were added and completed.
 		if (tasksLeftToAdd == 0 && tasksLeftToComplete == 0) {
-			// Debug.
-			console.log("Sync: step #2 finished.");
+			// Sending the message.
+			messageHandler({"msg": "habit-push-finish"});
 			// Triggering next step.
-			sync3();
+			sync3(messageHandler);
 		}
 		else {
 			// Check again in 500 ms.
-			window.setTimeout(sync2check, 500);
+			window.setTimeout(function () { sync2check(messageHandler); }, 500);
 		}
 	}
 
 	/**
 	 * @name sync3
 	 * @description The third sync step.
+	 * @param messageHandler Function to handle sync messages.
 	 */
-	function sync3() {
+	function sync3(messageHandler) {
 		// Updating sync date.
 		var now = new Date();
 		localStorage.setItem('LastSync', now.toLocaleDateString() + " " + 
 			now.toLocaleTimeString());
 
-		//
-		// TODO
-		//
-		// Reloading.
-		//location.reload();
+		// Sending the message.
+		messageHandler({"msg": "sync-finish"});
 	}
 
 	// Returning the public section.

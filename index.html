@@ -23,7 +23,7 @@
       <hr>
       <p>
         <div id="accounts-connected">
-          <button type="button" class="btn btn-info" onClick="javascript:Wunderica.sync();">
+          <button type="button" class="btn btn-info" onClick="javascript:WundericaUI.sync();">
             Sync
           </button>
           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#disconnectModal">
@@ -100,6 +100,24 @@
         </div>
       </div>
       <!-- /Disconnect -->
+
+      <!-- SyncWindow -->
+      <div class="modal fade" id="syncModal" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Wunderica sync</h4>
+            </div>
+            <div class="modal-body" id="syncModalMessages">
+              <p>Syncing your Wunderlist to Habitica&hellip;</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="syncModalCloseBtn" class="btn btn-default disabled" onClick="javascript:location.reload();">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /SyncWindow -->
 
       <!-- Statistics -->
       <div id="stats">

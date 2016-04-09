@@ -18,7 +18,7 @@ var WundericaUI = (function() {
 	 **************************************************************************/
 
 	/**
-	 * @name start
+	 * @function start
 	 * @description Initializes Wunderica UI.
 	 */
 	pub.start = function () {
@@ -91,7 +91,7 @@ var WundericaUI = (function() {
 	};
 
 	/**
-	 * @name connectToHabitica
+	 * @function connectToHabitica
 	 * @description Connects Wunderica to Wunderlist.
 	 */
 	pub.connectToHabitica = function () {
@@ -105,12 +105,50 @@ var WundericaUI = (function() {
 	};
 
 	/**
-	 * @name disconnect
+	 * @function disconnect
 	 * @description Disconnects Wunderica from Wunderlist and Habitica.
 	 */
 	pub.disconnect = function () {
 		Wunderica.disconnect();
 		location.reload();
+	};
+
+	/**
+	 * @function sync
+	 * @description Syncs Wunderlist to Habitica, using Wunderica.sync() function.
+	 */
+	pub.sync = function () {
+		// Handler for sync messages.
+		var messageHandler = (function (msg) {
+			// Getting current contents of #syncModalMessages.
+			var html = $("#syncModalMessages").html();
+			// Adding this message.
+			if (msg.msg == "sync-start")
+				html += "<p>Sync has started.</p>";
+			else if (msg.msg == "wlist-fetch-start")
+				html += "<p>Started to fetching completed tasks from Wunderlist.</p>";
+			else if (msg.msg == "wlist-fetch-finish")
+				html += "<p>Fetches " + msg.num + " tasks from Wunderlist.</p>";
+			else if (msg.msg == "habit-push-start")
+				html += "<p>" + msg.num + " tasks need to be pushed to Habitica.</p>";
+			else if (msg.msg == "habit-pushed-task")
+				html += "<p>Pushed one task to Habitica.</p>";
+			else if (msg.msg == "habit-push-finish")
+				html += "<p>Finished to push tasks to Habitica.</p>";
+			else if (msg.msg == "sync-finish") {
+				html += "<p>Sync has finished.</p>";
+				html += "<p>Now you can close this Window.</p>";
+				$("#syncModalCloseBtn").attr('class', 'btn btn-default');
+			}
+			// Setting up new contents.
+			$("#syncModalMessages").html(html);
+		});
+
+		// Showing sync window.
+		$("#syncModal").modal("show");
+
+		// Finally, calling sync.
+		Wunderica.sync(messageHandler);
 	};
 
 	// Returning the public section.
