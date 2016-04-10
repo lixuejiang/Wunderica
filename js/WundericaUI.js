@@ -118,30 +118,45 @@ var WundericaUI = (function() {
 	 * @description Syncs Wunderlist to Habitica, using Wunderica.sync() function.
 	 */
 	pub.sync = function () {
+		// Total number of tasks need to be pushed.
+		var num = 0;
+		// Already pushed.
+		var pushedNum = 0;
 		// Handler for sync messages.
 		var messageHandler = (function (msg) {
-			// Getting current contents of #syncModalMessages.
-			var html = $("#syncModalMessages").html();
+			// Text for #syncModalMessage.
+			var html;
 			// Adding this message.
 			if (msg.msg == "sync-start")
-				html += "<p>Sync has started.</p>";
+				html = "Sync has started.";
 			else if (msg.msg == "wlist-fetch-start")
-				html += "<p>Started to fetching completed tasks from Wunderlist.</p>";
+				html = "Started to fetching completed tasks from Wunderlist.";
 			else if (msg.msg == "wlist-fetch-finish")
-				html += "<p>Fetches " + msg.num + " tasks from Wunderlist.</p>";
-			else if (msg.msg == "habit-push-start")
-				html += "<p>" + msg.num + " tasks need to be pushed to Habitica.</p>";
-			else if (msg.msg == "habit-pushed-task")
-				html += "<p>Pushed one task to Habitica.</p>";
-			else if (msg.msg == "habit-push-finish")
-				html += "<p>Finished to push tasks to Habitica.</p>";
+				html = "Fetched " + msg.num + " tasks from Wunderlist.";
+			else if (msg.msg == "habit-push-start") {
+				html = msg.num + " tasks need to be pushed to Habitica.";
+				$("#syncModalProgress").show();
+				$("#syncModalProgressBar").attr('style', 'width: 0%;');
+				num = msg.num;
+			}
+			else if (msg.msg == "habit-pushed-task") {
+				pushedNum++;
+				$("#syncModalProgress").attr('style', 
+					'width: ' + 100*pushedNum/num + '%;');
+			}
+			else if (msg.msg == "habit-push-finish") {
+				$("#syncModalProgress").hide();
+				html = "Finished to push tasks to Habitica.";
+			}
 			else if (msg.msg == "sync-finish") {
-				html += "<p>Sync has finished.</p>";
-				html += "<p>Now you can close this Window.</p>";
+				html = "Sync has finished. Now you can close this Window.";
 				$("#syncModalCloseBtn").attr('class', 'btn btn-default');
+				if (pushedNum != num) {
+					$("#syncModalFail").show();
+				}
 			}
 			// Setting up new contents.
-			$("#syncModalMessages").html(html);
+			$("#syncModalMessage").html(html);
 		});
 
 		// Showing sync window.
