@@ -130,7 +130,7 @@ var WundericaUI = (function() {
 			if (msg.msg == "sync-start")
 				html = "Sync has started.";
 			else if (msg.msg == "wlist-fetch-start")
-				html = "Started to fetching completed tasks from Wunderlist.";
+				html = "Started to fetch completed tasks from Wunderlist.";
 			else if (msg.msg == "wlist-fetch-finish")
 				html = "Fetched " + msg.num + " tasks from Wunderlist.";
 			else if (msg.msg == "habit-push-start") {
