@@ -91,6 +91,19 @@ var HabitTools = (function() {
 	// FetchRequest will be called automatically.
 	window.setTimeout(FetchRequest, 100);
 
+	/**
+	 * @function GetTaskValueForDays
+	 * @description Calculates task value for a task, which is "# days old."
+	 * @param days number of days
+	 */
+	function GetTaskValueForDays(days) {
+		var value = 0;
+		for (i = 0; i < days; i++) {
+			value -= Math.pow(0.9747, value);
+		}
+		return value;
+	};
+
 	/***************************************************************************
 	 * Public methods.
 	 **************************************************************************/
