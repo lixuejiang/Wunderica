@@ -141,8 +141,9 @@ var WundericaUI = (function() {
 			}
 			else if (msg.msg == "habit-pushed-task") {
 				pushedNum++;
-				$("#syncModalProgress").attr('style', 
+				$("#syncModalProgressBar").attr('style', 
 					'width: ' + 100*pushedNum/num + '%;');
+				$("#syncModalProgressBar").attr('aria-valuenow', 100*pushedNum/num);
 			}
 			else if (msg.msg == "habit-push-finish") {
 				$("#syncModalProgress").hide();
