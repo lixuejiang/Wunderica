@@ -18,13 +18,13 @@ var Utils = (function () {
 	 **************************************************************************/
 
 	/**
-	 * @function    arrayDiff
+	 * @function	arrayDiff
 	 * @description Returns asymmetrical difference of two arrays.
-	 * @param       a first array
-	 * @param       b second array
+	 * @param	   a first array
+	 * @param	   b second array
 	 */
 	pub.arrayDiff = function (a, b) {
-	    return a.filter(function(i) { return b.indexOf(i) < 0; });
+		return a.filter(function(i) { return b.indexOf(i) < 0; });
 	};
 
 	/**
@@ -35,6 +35,30 @@ var Utils = (function () {
 	 */
 	pub.getURLParameter = function (name) {
   		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+	}
+
+	/**
+	 * @function treatAsUTC
+	 * @description Converts Date object to UTC.
+	 * @param date Date object
+	 * @see http://stackoverflow.com/a/11252167
+	 */
+	pub.treatAsUTC = function(date) {
+		var result = new Date(date);
+		result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+		return result;
+	}
+
+	/**
+	 * @function daysBetween
+	 * @description Returns how much days there are between two dates.
+	 * @param startDate first date
+	 * @param endDate   second date
+	 * @see http://stackoverflow.com/a/11252167
+	 */
+	pub.daysBetween = function(startDate, endDate) {
+		var millisecondsPerDay = 24 * 60 * 60 * 1000;
+		return (pub.treatAsUTC(endDate) - pub.treatAsUTC(startDate)) / millisecondsPerDay;
 	}
 
 	// Returning the public section.

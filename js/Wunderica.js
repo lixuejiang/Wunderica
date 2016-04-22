@@ -137,6 +137,7 @@ var Wunderica = (function () {
 			wunderlistIDs = IDs;
 			wunderlistObjects = objects;
 			wunderlistSubtasks = subtasks;
+			pub.objs = objects;
 			// Triggering the next step.
 			sync2(messageHandler);
 		});
@@ -211,6 +212,11 @@ var Wunderica = (function () {
 						"todo",
 						// Subtasks.
 						subs,
+						// How old is this task?
+						Utils.daysBetween(
+							new Date(wunderlistObjects[wlID].created_at), 
+							new Date()
+						),
 						// Handler.
 						function(status, response) {
 							// We tried to add a task.

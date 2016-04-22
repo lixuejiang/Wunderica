@@ -114,18 +114,20 @@ var HabitTools = (function() {
 	 * @param text     Task title.
 	 * @param type     Task type (todo/daily/habit).
 	 * @param subtasks List with completed subtasks.
+	 * @param days     How old this task is.
 	 * @param handler  Function, which will be called after. This function must
 	 *                 have two arguments: the first one is XMLHttpRequest 
 	 *                 status, the second one is a Habitica response.
 	 */
-	pub.addTask = function(text, type, subtasks, handler) {
+	pub.addTask = function(text, type, subtasks, days, handler) {
 		// Creating an HTTP request.
 		var xmlHttp = NewRequest(
 			"POST",
 			"https://habitica.com:443/api/v2/user/tasks",
 			{
 				"text": text, 
-				"type": type, 
+				"type": type,
+				"value": GetTaskValueForDays(days),
 				"checklist": subtasks.map(function(val) {
 					return {"text": val, "completed": true};
 				})
